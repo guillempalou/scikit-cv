@@ -1,0 +1,1 @@
+Search.setIndex({titles:["Welcome to PythonCV&#8217;s documentation!"],objnames:{},filenames:["index"],terms:{page:0,modul:0,content:0,search:0,index:0},envversion:43,objects:{},objtypes:{},titleterms:{welcom:0,indic:0,tabl:0,pythoncv:0,document:0}})

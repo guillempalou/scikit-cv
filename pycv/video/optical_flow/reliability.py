@@ -11,8 +11,8 @@ def variation_reliability(flow, gamma=1):
     flow: numpy array with flow values
     gamma: soft threshold
 
-    Return
-    ------
+    Returns
+    -------
     variation_reliability: reliability map (0 less reliable, 1 reliable)
     """
 
@@ -106,10 +106,15 @@ def structure_reliability(img, gamma=1):
 def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
     """
 
+    Parameters
+    ----------
     @param img: image frame
     @param forward_flow: flow from the current frame to the other
     @param backward_flow: flow from the next frame and the current
     @param use_structure: use structure to compute the minimum
+
+    Returns
+    -------
     @return: the minimum of the different reliabilities
     """
 

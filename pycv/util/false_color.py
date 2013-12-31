@@ -8,9 +8,9 @@ def false_color(id_map):
     
     Parameters
     ---------
-    id_map : 2D or 3D array with id values
+    id_map : 2D or 3D numpy array with id values
 
-    Return
+    Returns
     -------
     false_color: array with the same shape than input with 3 values for each position
     """

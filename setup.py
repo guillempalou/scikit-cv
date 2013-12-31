@@ -1,28 +1,28 @@
 #! /usr/bin/env python
 
-descr = """Image Processing SciKit
+descr = """Python Computer Vision
 
-Image processing algorithms for SciPy, including IO, morphology, filtering,
-warping, color manipulation, object detection, etc.
+Computer Vision algorithms based on Scikit-Image and Scikit-learn
+Includes: image and video segmentation, optical flow, n-view geometry
 
-Please refer to the online documentation at
-http://scikit-image.org/
 """
 
-DISTNAME            = 'scikit-image'
-DESCRIPTION         = 'Image processing routines for SciPy'
+DISTNAME            = 'pycv'
+DESCRIPTION         = 'Computer Vision library for Python'
 LONG_DESCRIPTION    = descr
-MAINTAINER          = 'Stefan van der Walt'
-MAINTAINER_EMAIL    = 'stefan@sun.ac.za'
-URL                 = 'http://scikit-image.org'
-LICENSE             = 'Modified BSD'
-DOWNLOAD_URL        = 'http://github.com/scikit-image/scikit-image'
-VERSION             = '0.10dev'
-PYTHON_VERSION      = (2, 5)
+MAINTAINER          = 'Guillem Palou'
+MAINTAINER_EMAIL    = 'guillem.palou@gmail.com'
+#URL                 = 'http://pycv.org'
+LICENSE             = 'MIT'
+DOWNLOAD_URL        = 'http://github.com/guillempalou/pycv'
+VERSION             = '0.1dev'
+PYTHON_VERSION      = (3, 3)
 DEPENDENCIES        = {
                         'numpy': (1, 6),
                         'Cython': (0, 17),
                         'six': (1, 3),
+                        'skimage' : (0, 9),
+                        'sklearn' : (0, 14)
                       }
 
 
@@ -46,14 +46,14 @@ def configuration(parent_package='', top_path=None):
             delegate_options_to_subpackages=True,
             quiet=True)
 
-    config.add_subpackage('skimage')
-    config.add_data_dir('skimage/data')
+    config.add_subpackage('pycv')
+    config.add_data_dir('pycv/data')
 
     return config
 
 
-def write_version_py(filename='skimage/version.py'):
-    template = """# THIS FILE IS GENERATED FROM THE SKIMAGE SETUP.PY
+def write_version_py(filename='pycv/version.py'):
+    template = """# THIS FILE IS GENERATED FROM THE PYCV SETUP.PY
 version='%s'
 """
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         maintainer=MAINTAINER,
         maintainer_email=MAINTAINER_EMAIL,
-        url=URL,
+        #url=URL,
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
@@ -124,7 +124,7 @@ if __name__ == "__main__":
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: BSD License',
-            'Programming Language :: C',
+            'Programming Language :: C++',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Topic :: Scientific/Engineering',
@@ -139,10 +139,6 @@ if __name__ == "__main__":
         packages=setuptools.find_packages(exclude=['doc']),
         include_package_data=True,
         zip_safe=False, # the package can run out of an .egg file
-
-        entry_points={
-            'console_scripts': ['skivi = skimage.scripts.skivi:main'],
-        },
 
         cmdclass={'build_py': build_py},
     )

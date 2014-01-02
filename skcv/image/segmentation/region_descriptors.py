@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.cluster.vq import kmeans
 
 def region_mean_color(img, region):
     """ Region mean color
@@ -64,9 +65,12 @@ def region_dominant_colors(img, region, colors = 8):
 
     Returns
     -------
-    hist: list
-        list of ndarrays representing histograms
-    edges: list
-        list of ndarrays representing the edge bins
-
+    cb: list
+        list of ndarrays representing the centroid
+    error: float
+        squared error of the clustering process
     """
+
+    values = img[region["coords"][0], region["coords"][1],:]
+    cb, error =  kmeans(values,colors)
+    return cb, error

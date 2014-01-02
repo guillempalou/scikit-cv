@@ -28,7 +28,8 @@ def region_color_histograms(img, region, bins = 10):
         color/gray image
     region: dict
         dictionary containing the coordinates of the region
-    bins:
+    bins: int, optional
+        number of bins for each channel
 
     Returns
     -------
@@ -40,11 +41,31 @@ def region_color_histograms(img, region, bins = 10):
     """
     hist = []
     edges = []
-    channels = img.shape[3]
+    channels = img.shape[2]
     for i in range(channels):
         values = img[region["coords"][0], region["coords"][1],i]
         h,e = np.histogram(values,bins=bins,density=True)
         hist.append(h)
         edges.append(e)
 
-    return (hist,edges)
+    return hist,edges
+
+def region_dominant_colors(img, region, colors = 8):
+    """ Region mean color
+
+    Parameters
+    ----------
+    img: numpy array (N,M,D)
+        color/gray image
+    region: dict
+        dictionary containing the coordinates of the region
+    bins:
+
+    Returns
+    -------
+    hist: list
+        list of ndarrays representing histograms
+    edges: list
+        list of ndarrays representing the edge bins
+
+    """

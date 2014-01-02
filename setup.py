@@ -1,20 +1,20 @@
 #! /usr/bin/env python
 
-descr = """Python Computer Vision
+descr = """Scikit Computer Vision
 
 Computer Vision algorithms based on Scikit-Image and Scikit-learn
 Includes: image and video segmentation, optical flow, n-view geometry
 
 """
 
-DISTNAME            = 'pycv'
+DISTNAME            = 'skicit-cv'
 DESCRIPTION         = 'Computer Vision library for Python'
 LONG_DESCRIPTION    = descr
 MAINTAINER          = 'Guillem Palou'
 MAINTAINER_EMAIL    = 'guillem.palou@gmail.com'
 #URL                 = 'http://pycv.org'
 LICENSE             = 'MIT'
-DOWNLOAD_URL        = 'http://github.com/guillempalou/pycv'
+DOWNLOAD_URL        = 'http://github.com/guillempalou/scikit-cv'
 VERSION             = '0.1dev'
 PYTHON_VERSION      = (3, 3)
 DEPENDENCIES        = {
@@ -46,13 +46,13 @@ def configuration(parent_package='', top_path=None):
             delegate_options_to_subpackages=True,
             quiet=True)
 
-    config.add_subpackage('pycv')
-    config.add_data_dir('pycv/data')
+    config.add_subpackage('skcv')
+    config.add_data_dir('skcv/data')
 
     return config
 
 
-def write_version_py(filename='pycv/version.py'):
+def write_version_py(filename='skcv/version.py'):
     template = """# THIS FILE IS GENERATED FROM THE PYCV SETUP.PY
 version='%s'
 """

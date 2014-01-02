@@ -25,7 +25,7 @@ def region_color_histograms(img, region, bins = 10):
     Parameters
     ----------
     img: numpy array (N,M,D)
-        color/gray image
+        color/gray image with [0..1] range for each channel
     region: dict
         dictionary containing the coordinates of the region
     bins: int, optional
@@ -42,9 +42,10 @@ def region_color_histograms(img, region, bins = 10):
     hist = []
     edges = []
     channels = img.shape[2]
+
     for i in range(channels):
         values = img[region["coords"][0], region["coords"][1],i]
-        h,e = np.histogram(values,bins=bins,density=True)
+        h,e = np.histogram(values,bins=bins,range=(0,1))
         hist.append(h)
         edges.append(e)
 

@@ -21,8 +21,9 @@ DEPENDENCIES        = {
                         'numpy': (1, 6),
                         'Cython': (0, 17),
                         'six': (1, 3),
-                        'skimage' : (0, 9),
-                        'sklearn' : (0, 14)
+                        'skimage': (0, 9),
+                        'sklearn': (0, 14),
+                        'networkx': (1, 8)
                       }
 
 

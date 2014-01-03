@@ -42,3 +42,7 @@ def test_histograms():
             hist_gt[k] += 2500
             assert_almost_equal(hst,hist_gt)
             k += 1
+
+def test_dominant_colors():
+    #TODO
+    pass

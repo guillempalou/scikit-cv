@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pycv.iml" filepath="$PROJECT_DIR$/.idea/pycv.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/scikit-cv.iml" filepath="$PROJECT_DIR$/.idea/scikit-cv.iml" />
     </modules>
   </component>

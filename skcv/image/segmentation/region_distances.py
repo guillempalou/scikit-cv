@@ -1,7 +1,5 @@
-__author__ = 'guillem'
-
-from region_descriptors import region_mean_color
 import numpy as np;
+from skcv.image.segmentation.region_descriptors import region_mean_color
 
 def mean_color_distance(img,r1,r2):
     """ Returns the color mean of two regions

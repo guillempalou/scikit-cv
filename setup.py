@@ -12,7 +12,7 @@ DESCRIPTION         = 'Computer Vision library for Python'
 LONG_DESCRIPTION    = descr
 MAINTAINER          = 'Guillem Palou'
 MAINTAINER_EMAIL    = 'guillem.palou@gmail.com'
-#URL                 = 'http://pycv.org'
+URL                 = 'http://github.com/guillempalou/scikit-cv'
 LICENSE             = 'MIT'
 DOWNLOAD_URL        = 'http://github.com/guillempalou/scikit-cv'
 VERSION             = '0.1dev'
@@ -21,8 +21,9 @@ DEPENDENCIES        = {
                         'numpy': (1, 6),
                         'Cython': (0, 17),
                         'six': (1, 3),
-                        'skimage' : (0, 9),
-                        'sklearn' : (0, 14)
+                        'skimage': (0, 9),
+                        'sklearn': (0, 14),
+                        'networkx': (1, 8)
                       }
 
 
@@ -53,7 +54,7 @@ def configuration(parent_package='', top_path=None):
 
 
 def write_version_py(filename='skcv/version.py'):
-    template = """# THIS FILE IS GENERATED FROM THE PYCV SETUP.PY
+    template = """# THIS FILE IS GENERATED FROM THE SCIKIT-CV SETUP.PY
 version='%s'
 """
 
@@ -111,9 +112,9 @@ if __name__ == "__main__":
         name=DISTNAME,
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
-        maintainer=MAINTAINER,
-        maintainer_email=MAINTAINER_EMAIL,
-        #url=URL,
+        author=MAINTAINER,
+        author_email=MAINTAINER_EMAIL,
+        url=URL,
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
@@ -123,7 +124,7 @@ if __name__ == "__main__":
             'Environment :: Console',
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
-            'License :: OSI Approved :: BSD License',
+            'License :: OSI Approved :: MIT License',
             'Programming Language :: C++',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',

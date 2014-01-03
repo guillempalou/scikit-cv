@@ -30,7 +30,11 @@ def test_histograms():
     part[:N/2,M/2:] = 2
     part[N/2:,M/2:] = 3
 
-    img = np.fromfunction(lambda r, c, d: (part[r.astype(np.int),c.astype(np.int)]/4 + d/12), (N, M, 3), dtype=np.float64)
+    f = lambda r, c, d: (part[r.astype(np.int),c.astype(np.int)]/4 + d/12)
+
+    img = np.fromfunction(f,
+                          (N, M, 3),
+                          dtype=np.float64)
 
     k = 0
     for i in range(4):

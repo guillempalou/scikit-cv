@@ -1,5 +1,6 @@
 import heapq
 import numpy as np
+import matplotlib.pyplot as plt
 
 from skcv.graph.rag import rag
 
@@ -12,7 +13,8 @@ class BPT:
     to a predefined distance until only one region is
     left
     """
-    def __init__(self, image, partition, distance):
+    def __init__(self, image, partition, distance,
+                 update_partition=False, verbose=0):
         """ Creates the Binary Partition Tree
             from the initial partition using a specified
             distance
@@ -24,9 +26,13 @@ class BPT:
                 array containing the image
             partition: array (M,N)
                 array with labels used as the initial
-                parition
+                partition
             distance: function (img,region1,region2)
                 distance function between two regions
+            update_partition: bool, optional
+                whether the partition gets updated
+            verbose: int, optional
+                indicates the level of verbosity
         """
 
         #initial rag
@@ -41,7 +47,9 @@ class BPT:
         dists = []
         max_label = 0
         for e in r.edges_iter():
-            dists.append((distance(image, regions[e[0]], regions[e[1]]), e[0], e[1]))
+            dists.append((distance(image, regions[e[0]], regions[e[1]]),
+                          e[0],
+                          e[1]))
 
             #store the nodes to a structure
             self.nodes[e[0]]["childs"] = []
@@ -60,25 +68,34 @@ class BPT:
         merged = set()
 
         #number of regions, N-1 merges
-        N = len(regions)
+        n_regions = len(regions)
         max_label += 1
 
-        print("Performing {0} merges from {1}".format(N-1, max_label))
-        for n in range(N-1):
+        if (verbose > 0):
+            print("Performing {0} merges".format(n_regions-1, max_label))
+
+        for n in range(n_regions-1):
 
             to_merge = heapq.heappop(dists)
 
             while (to_merge[1] in merged) or (to_merge[2] in merged):
                 to_merge = heapq.heappop(dists)
 
-            print(to_merge)
-            
+            if (verbose > 1):
+                print("Merging {0} and {1} to {2} with distance ".format(
+                    to_merge[1],
+                    to_merge[2],
+                    max_label,
+                    to_merge[0]))
+
             coords1 = regions[to_merge[1]]["coords"]
             coords2 = regions[to_merge[2]]["coords"]
 
             #create the new region and add a node to the rag
-            coords_parent = np.vstack((coords1,coords2))
-            regions[max_label] = {"label" : max_label, "coords": coords_parent};
+            coords_parent = [np.hstack((coords1[0], coords2[0])),
+                             np.hstack((coords1[1], coords2[1]))]
+
+            regions[max_label] = {"label": max_label, "coords": coords_parent}
             r.add_node(max_label)
             self.nodes[max_label] = {}
 
@@ -106,5 +123,9 @@ class BPT:
             #add the two regions to the set of merged
             merged.add(to_merge[1])
             merged.add(to_merge[2])
+
+            #print(coords_parent,coords_parent.shape)
+            if update_partition:
+                partition[coords_parent[0][:], coords_parent[1][:]] = max_label
 
             max_label += 1

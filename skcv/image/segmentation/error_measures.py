@@ -1,6 +1,7 @@
 import numpy as np
 
-def undersegmentation_error(partition, groundtruth):
+def undersegmentation_error(partition, groundtruth,
+                            tolerance=0.05):
     """ Computes the undersegmentation error defined as:
         err(G_i) = (sum_{Area(S_i)} - area(G_i)) / area(G_i)
         where G_i is the groundtruth and
@@ -15,6 +16,9 @@ def undersegmentation_error(partition, groundtruth):
         groundtruth: (N,M) array or list
             array(list with groundtruth labels
 
+        tolerance: float, optional
+            threshold to consider oversegmentation
+
         Returns
         -------
         The undersegmentation error
@@ -27,7 +31,11 @@ def undersegmentation_error(partition, groundtruth):
 
     #partition labels
     seg_labels = np.unique(partition)
+    areas = {}
 
+    for s_i in seg_labels:
+        area = np.count_nonzero(partition == s_i)
+        areas[s_i] = area
 
     #evaluate each groundtruth segmentation
     err = 0
@@ -41,13 +49,14 @@ def undersegmentation_error(partition, groundtruth):
             area = np.count_nonzero(segmentation == g_i)
 
             #compute intersection
-            total_area = 0
+            total_area = 0.
             for s_i in seg_labels:
-                n = np.count_nonzero((segmentation == g_i) and
-                                 (partition == s_i))
-                total_area += n
+                n = np.count_nonzero((g_i == segmentation) *
+                                     (partition == s_i))
+                if n > tolerance*area:
+                    total_area += areas[s_i]
 
-            err_s += (total_area - area) / area
+            err_s += abs(total_area - area) / area
 
         err += err_s/len(gt_labels)
 

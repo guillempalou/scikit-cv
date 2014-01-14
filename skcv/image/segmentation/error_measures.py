@@ -1,4 +1,8 @@
+from cmath import sqrt
 import numpy as np
+import networkx as nx
+
+from math import sqrt
 
 def undersegmentation_error(partition, groundtruth,
                             tolerance=0.05):
@@ -29,7 +33,7 @@ def undersegmentation_error(partition, groundtruth,
     else:
         gt_list = gt_list + groundtruth
 
-    #partition labels
+    # partition labels
     seg_labels = np.unique(partition)
     areas = {}
 
@@ -37,18 +41,18 @@ def undersegmentation_error(partition, groundtruth,
         area = np.count_nonzero(partition == s_i)
         areas[s_i] = area
 
-    #evaluate each groundtruth segmentation
+    # evaluate each groundtruth segmentation
     err = 0
     for segmentation in gt_list:
         gt_labels = np.unique(segmentation)
         err_s = 0
-        #get error for each groundtruth region
+        # get error for each groundtruth region
         for g_i in gt_labels:
 
-            #get groundtruth area
+            # get groundtruth area
             area = np.count_nonzero(segmentation == g_i)
 
-            #compute intersection
+            # compute intersection
             total_area = 0.
             for s_i in seg_labels:
                 n = np.count_nonzero((g_i == segmentation) *
@@ -65,8 +69,101 @@ def undersegmentation_error(partition, groundtruth,
 def segmentation_accuracy(partition, groundtruth):
     pass
 
-def boundary_detection(partition, groundtruth):
-    pass
+def boundary_detection(partition, groundtruth, tolerance = 0.04):
+    """ Measures boundary detection
+
+        Parameters
+        ----------
+        partition: (N,M) array
+            array with obtained labels
+
+        groundtruth: (N,M) array or list
+            array(list with groundtruth labels
+
+        tolerance: float, optional
+            maximum distance of considered boundaries relative
+            to the diagonal
+
+        Returns
+        -------
+        The precision recall boundaries
+    """
+    # dictionary holding contours and their status (matched/not matched)
+    contours = {}
+    gt_contours = {}
+
+    # find horizontal contours for segmentation
+    seg_hx, seg_hy = np.where(partition[:-1, :] != partition[1:, :])
+
+    # find vertical contours for segmentation
+    seg_vx, seg_vy = np.where(partition[:, :-1] != partition[:, 1:])
+
+    # the third number reflects:
+    # 0/1: horizontal/vertical contour
+    # the forth number reflect
+    # 0/1: segmentation/groundtruth contour
+    for px,py in zip(seg_hx,seg_hy):
+        contours[(px, py, 0, 0)] = 0
+
+    for px,py in zip(seg_vx, seg_vy):
+        contours[(px, py, 1, 0)] = 0
+
+    # find horizontal contours for groundtruth
+    seg_hx, seg_hy = np.where(groundtruth[:-1, :] != groundtruth[1:, :])
+
+    # find vertical contours for groundtruth
+    seg_vx, seg_vy = np.where(groundtruth[:, :-1] != groundtruth[:, 1:])
+
+    # the third number reflects:
+    # 0/1: horizontal/vertical contour
+    # the forth number reflect
+    # 0/1: segmentation/groundtruth contour
+    for px,py in zip(seg_hx,seg_hy):
+        gt_contours[(px, py, 0, 1)] = 0
+
+    for px,py in zip(seg_vx, seg_vy):
+        gt_contours[(px, py, 1, 1)] = 0
+
+    # create a graph matching contours
+    bipartite = nx.Graph()
+    bipartite.add_nodes_from(contours)
+    bipartite.add_nodes_from(gt_contours)
+
+    diagonal = sqrt(partition.shape[0]**2 + partition.shape[1]**2)
+    # maximum distance to search for
+    D = int(tolerance * diagonal)
+    for contour in contours:
+        px = contour[0]
+        py = contour[1]
+        # find groundtruth contours around a neighborhood
+        for x in range(px - D, px + D + 1):
+            for y in range(py - D, py + D + 1):
+                hcontour = (x, y, 0, 1)
+                vcontour = (x, y, 1, 1)
+
+                # add an edge if a contour is found
+                if hcontour in bipartite:
+                    bipartite.add_edge(contour, hcontour)
+                if vcontour in bipartite:
+                    bipartite.add_edge(contour, hcontour)
+
+    # perform a matching
+    # matches contains twice the matchings
+    matches = nx.max_weight_matching(bipartite)
+
+    print("Contours {0} and {1} matches {2}".format(len(contours),
+          len(gt_contours), len(matches)))
+
+
+    # find precision/recall values
+    true_positives = len(matches)/2
+    false_positives = len(contours) - len(matches)/2
+    false_negatives = len(gt_contours) - len(matches)/2
+
+    precision = true_positives / (true_positives + false_positives)
+    recall = true_positives / (true_positives + false_negatives)
+
+    return precision, recall
 
 def explained_variation(img, partition, groundtruth):
     pass

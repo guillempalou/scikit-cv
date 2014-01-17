@@ -34,6 +34,9 @@ nosetests.xml
 # Translations
 *.mo
 
+# Mac OS Files
+.DS_Store
+
 # Mr Developer
 .mr.developer.cfg
 .project

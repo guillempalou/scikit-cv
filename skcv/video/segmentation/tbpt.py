@@ -2,7 +2,7 @@ import heapq
 import numpy as np
 import matplotlib.pyplot as plt
 
-from skcv.graph.rag import rag
+from skcv.graph.rag import rag, rag_temporal
 
 
 class TBPT:
@@ -42,10 +42,10 @@ class TBPT:
         """
 
         #initial rag
-        if use_flow_for_adjacency == False:
+        if not use_flow_for_adjacency:
             r, regions = rag(partition)
         else:
-            r, regions = rag_temporal(partition)
+            r, regions = rag_temporal(partition, optical_flow)
 
         #structures to save the tree topology
         self.nodes = {}
@@ -56,7 +56,7 @@ class TBPT:
         dists = []
         max_label = 0
         for e in r.edges_iter():
-            if optical_flow != None:
+            if optical_flow is not None:
                 dists.append((distance(video, optical_flow,
                                        regions[e[0]], regions[e[1]]),
                               e[0], e[1]))

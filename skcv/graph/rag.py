@@ -34,7 +34,6 @@ def rag(partition):
     if (dimensions == 2):
         partition = partition[:, :, np.newaxis]
 
-
     #create a RAG
     rag = nx.Graph()
     labels = np.unique(partition)

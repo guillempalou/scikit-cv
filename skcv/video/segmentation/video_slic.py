@@ -3,14 +3,14 @@ __author__ = 'guillem'
 import numpy as np;
 from skimage.segmentation import slic
 
-def oversegment_video(video, n_segments, compactness = 10):
+def video_slic(video, n_segments, compactness = 10):
     """
     Oversegments a collection of frames using SLIC
 
     Parameters
     ----------
 
-    video: numpy array (width, height, frames, channels)
+    video: numpy array (frames, width, height, channels)
         3 or 4 dimensional array representing the video
 
     n_segments: int
@@ -27,20 +27,20 @@ def oversegment_video(video, n_segments, compactness = 10):
     """
     d = len(video.shape)
 
-    width = video.shape[0]
-    height = video.shape[1]
+    width = video.shape[1]
+    height = video.shape[2]
 
     if d == 3:
         video = video[..., np.newaxis]
     elif d != 4:
         raise ValueError('Video should have 3 or 4 dimensions')
 
-    n_frames = video.shape[3]
+    n_frames = video.shape[0]
 
-    partition = np.zeros((width, height, n_frames))
+    partition = np.zeros((n_frames, width, height))
     for n in range(n_frames):
-        frame = video[:, :, n, :]
-        partition[:, :, n] = slic(frame, n_segments, compactness)
+        frame = video[n, :, :, :]
+        partition[n, :, :] = slic(frame, n_segments, compactness)
 
     return partition
 

@@ -31,20 +31,20 @@ def rag(partition):
 
     dimensions = len(partition.shape)
 
-    if (dimensions == 2):
+    if dimensions == 2:
         partition = partition[:, :, np.newaxis]
 
     #create a RAG
     rag = nx.Graph()
     labels = np.unique(partition)
 
-    #create a regions hastable organized by label
+    #create a regions hash table organized by label
     regions = {}
     for label in labels:
         px, py, pz = np.where(partition == label)
-        if (dimensions == 2):
+        if dimensions == 2:
             coords = [px, py]
-        if (dimensions == 3):
+        if dimensions == 3:
             coords = [px, py, pz]
         regions[label] = {"label": label, "coords": coords}
 
@@ -56,7 +56,7 @@ def rag(partition):
     startx = []
 
     #list containing all tuples
-    pairs = [];
+    pairs = []
     for d in range(3):
         if d == 0:
             idx = np.where(partition[:-1, :, :] != partition[1:, :, :])

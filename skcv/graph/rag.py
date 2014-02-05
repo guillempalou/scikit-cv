@@ -35,7 +35,7 @@ def rag(partition, discard_axis=[]):
     dimensions = len(partition.shape)
 
     if dimensions == 2:
-        partition = partition[:, :]
+        partition = partition[:, :, np.newaxis]
 
     #create a RAG
     rag = nx.Graph()

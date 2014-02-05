@@ -6,6 +6,7 @@ from skimage import filter
 
 import matplotlib.pyplot as plt
 
+
 def variation_reliability(flow, gamma=1):
     """ Calculates the flow variation reliability
     Parameters
@@ -92,6 +93,8 @@ def structure_reliability(img, gamma=1):
 
     st = np.zeros((img.shape[0], img.shape[1]))
 
+    eps = 1e-6
+
     for k in np.arange(img.shape[2]):
         grad = np.gradient(img[:, :, k])
         #compute components of the structure tensor
@@ -103,11 +106,11 @@ def structure_reliability(img, gamma=1):
         wdet = wxx * wyy - wxy ** 2
         wtr = wxx + wyy
 
-        st += wdet / wtr
+        st += wdet / (wtr + eps)
 
-    avg = st.mean();
+    avg = st.mean()
 
-    return 1 - np.exp(-(st) / (0.7 * avg * gamma))
+    return 1 - np.exp(-st / (0.7 * avg * gamma))
 
 
 def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
@@ -128,7 +131,7 @@ def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
     #soft threshold
     gamma = 1
 
-    if (use_structure):
+    if use_structure:
         st = structure_reliability(img, gamma)
     else:
         st = np.ones((img.shape[0], img.shape[1]))

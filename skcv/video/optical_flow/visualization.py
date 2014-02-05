@@ -88,7 +88,7 @@ def flow_to_image(flow):
     #get the norm of each vector flow
     maxnorm = np.max(u*u + v*v)
 
-    print "Flow range u={hmin} .. {hmax}; v = {vmin} .. {vmax}".format(hmin = minu, hmax = maxu, vmin = minv, vmax = maxv)
+    print("Flow range u={hmin} .. {hmax}; v = {vmin} .. {vmax}".format(hmin = minu, hmax = maxu, vmin = minv, vmax = maxv))
 
     eps = 1e-10
     u = u / (maxnorm + eps)

@@ -1,1 +1,1 @@
-__author__ = 'guillem'
+from .fundamental_matrix import eight_point_algorithm

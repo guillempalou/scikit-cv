@@ -1,6 +1,6 @@
 import numpy as np
 
-def random_sphere(N, radius):
+def random_sphere(N, radius, center=None):
     """
     Generates N points randomly distributed on a sphere
 
@@ -12,6 +12,9 @@ def random_sphere(N, radius):
     radius: float
     Radius of the sphere
 
+    center: numyp array, optional
+    center of the sphere. (0,0,0) default
+
     Returns
     -------
     Array (3, N) with the points
@@ -21,13 +24,20 @@ def random_sphere(N, radius):
     u = 2*np.random.random(N)-1
     theta = 2*np.pi*np.random.random(N)
 
-    points = np.array((np.sqrt(1-u**2)*np.cos(theta),
-                       np.sqrt(1-u**2)*np.sin(theta), u))
+    points = np.array((radius*np.sqrt(1-u**2)*np.cos(theta),
+                       radius*np.sqrt(1-u**2)*np.sin(theta), radius*u))
+
+    if center is not None:
+        if center.shape[0] != 3 or len(center.shape) != 1:
+            raise TypeError("Center must have 3 dimensions")
+        c = np.repeat(center, N)
+        c = np.reshape(c, (3, N))
+        points += c
 
     return points
 
 
-def random_ball(N, radius):
+def random_ball(N, radius, center=None):
     """
     Generates N points randomly distributed on a ball
     x^2+y^2+z^y <= 1
@@ -55,7 +65,7 @@ def random_ball(N, radius):
 
     return points
 
-def random_cube(N, size):
+def random_cube(N, size, center=None):
     """
     Generates N points randomly distributed on cube
 
@@ -72,7 +82,7 @@ def random_cube(N, size):
     Array (3, N) with the points
 
     """
-    
+
     x = size*np.random.random((3, N)) - 0.5*size
     face = np.random.randint(0, 3, N)
     side = 2*np.random.randint(0, 2, N)-1

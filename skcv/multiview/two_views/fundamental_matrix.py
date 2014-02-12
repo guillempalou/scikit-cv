@@ -24,8 +24,8 @@ def eight_point_algorithm(x1, x2):
 
     """
 
-    N = x1.shape[1]
-    if (x2.shape != N):
+    n_points = x1.shape[1]
+    if x2.shape != n_points:
         raise ValueError("Shape must be the same")
 
     # normalize points
@@ -33,16 +33,16 @@ def eight_point_algorithm(x1, x2):
     x2n, t2 = normalize_points(x2, is_homogeneous=True)
 
     # build the vector
-    a = np.zeros((9, N))
-    for i in range(N):
+    a = np.zeros((9, n_points))
+    for i in range(n_points):
         a[:, i] = np.kron(x2n[:, i], x1n[:, i])
 
     # find F in the normalized coordinates and transform it
     u,d,v = svd(a.T)
-    F = np.reshape(v, (3, 3))
-    F = t2.T*F*t1
+    f_matrix = np.reshape(v, (3, 3))
+    f_matrix = t2.T*f_matrix*t1
 
-    return F
+    return f_matrix
 
 
 def robust_F_estimation(x1, x2, max_iter=1000, inlier_threshold=2):

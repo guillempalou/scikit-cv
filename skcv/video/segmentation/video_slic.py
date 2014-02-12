@@ -38,9 +38,11 @@ def video_slic(video, n_segments, compactness = 10):
     n_frames = video.shape[0]
 
     partition = np.zeros((n_frames, width, height))
+    current_label = 0
     for n in range(n_frames):
         frame = video[n, :, :, :]
-        partition[n, :, :] = slic(frame, n_segments, compactness)
+        partition[n, :, :] = slic(frame, n_segments, compactness) + current_label
+        current_label = np.max(partition[n, :, :])+1
 
     return partition
 

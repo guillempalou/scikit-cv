@@ -4,12 +4,15 @@ import networkx as nx
 import numpy as np
 
 
-def rag(partition):
+def rag(partition, discard_axis=[]):
     """
     Parameters
     ----------
     partition: numpy array
     A 2D or 3D label array where each label represents a region
+
+    discard_axis: list, optional
+    Whether the rag discards adjacencies from given axis
 
     Returns
     -------
@@ -31,20 +34,20 @@ def rag(partition):
 
     dimensions = len(partition.shape)
 
-    if (dimensions == 2):
+    if dimensions == 2:
         partition = partition[:, :, np.newaxis]
 
     #create a RAG
     rag = nx.Graph()
     labels = np.unique(partition)
 
-    #create a regions hastable organized by label
+    #create a regions hash table organized by label
     regions = {}
     for label in labels:
         px, py, pz = np.where(partition == label)
-        if (dimensions == 2):
+        if dimensions == 2:
             coords = [px, py]
-        if (dimensions == 3):
+        if dimensions == 3:
             coords = [px, py, pz]
         regions[label] = {"label": label, "coords": coords}
 
@@ -56,8 +59,11 @@ def rag(partition):
     startx = []
 
     #list containing all tuples
-    pairs = [];
+    pairs = []
     for d in range(3):
+        # ignore the adjacency on the given axis
+        if d in discard_axis:
+            continue
         if d == 0:
             idx = np.where(partition[:-1, :, :] != partition[1:, :, :])
         elif d == 1:

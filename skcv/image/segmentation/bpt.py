@@ -1,6 +1,8 @@
 import heapq
 import numpy as np
+
 import matplotlib.pyplot as plt
+from skcv.util import false_color, partition_mean_color
 
 from skcv.graph.rag import rag
 
@@ -13,6 +15,7 @@ class BPT:
     to a predefined distance until only one region is
     left
     """
+
     def __init__(self, image, partition, distance,
                  update_partition=False, verbose=0):
         """ Creates the Binary Partition Tree
@@ -43,6 +46,9 @@ class BPT:
         for reg in regions:
             self.nodes[reg] = {}
 
+        # store the leaves partition
+        self.leaves_partition = np.copy(partition)
+
         #compute initial distances
         dists = []
         max_label = 0
@@ -71,7 +77,7 @@ class BPT:
         n_regions = len(regions)
         max_label += 1
 
-        if (verbose > 0):
+        if verbose > 0:
             print("Performing {0} merges".format(n_regions-1, max_label))
 
         for n in range(n_regions-1):
@@ -81,7 +87,7 @@ class BPT:
             while (to_merge[1] in merged) or (to_merge[2] in merged):
                 to_merge = heapq.heappop(dists)
 
-            if (verbose > 1):
+            if verbose > 1:
                 print("Merging {0} and {1} to {2} with distance ".format(
                     to_merge[1],
                     to_merge[2],
@@ -92,8 +98,9 @@ class BPT:
             coords2 = regions[to_merge[2]]["coords"]
 
             #create the new region and add a node to the rag
-            coords_parent = [np.hstack((coords1[0], coords2[0])),
-                             np.hstack((coords1[1], coords2[1]))]
+            dimensions = len(coords1)
+            coords_parent = [np.hstack((coords1[i], coords2[i]))
+                             for i in range(dimensions)]
 
             regions[max_label] = {"label": max_label, "coords": coords_parent}
             r.add_node(max_label)
@@ -126,6 +133,7 @@ class BPT:
 
             #print(coords_parent,coords_parent.shape)
             if update_partition:
-                partition[coords_parent[0][:], coords_parent[1][:]] = max_label
+                coords = [c for c in coords_parent]
+                partition[coords] = max_label
 
             max_label += 1

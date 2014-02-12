@@ -17,7 +17,9 @@ def region_mean_color(img, region):
         color mean of the region
 
     """
-    avg = np.mean(img[region["coords"][0], region["coords"][1],:],axis=0)
+    # construct adavanced indexing
+    coords = [c for c in region["coords"]] + [slice(img.shape[-1])]
+    avg = np.mean(img[coords], axis=0)
     return avg
 
 def region_color_histograms(img, region, bins = 10):
@@ -42,17 +44,21 @@ def region_color_histograms(img, region, bins = 10):
     """
     hist = []
     edges = []
-    channels = img.shape[2]
+    channels = img.shape[-1]
+
+    # construct adavanced indexing
+    coords = [c for c in region["coords"]]
 
     for i in range(channels):
-        values = img[region["coords"][0], region["coords"][1],i]
-        h,e = np.histogram(values,bins=bins,range=(0,1))
+        c = coords + [i]
+        values = img[c]
+        h,e = np.histogram(values, bins=bins, range=(0, 1))
         hist.append(h)
         edges.append(e)
 
-    return hist,edges
+    return hist, edges
 
-def region_dominant_colors(img, region, colors = 8):
+def region_dominant_colors(img, region, colors=8):
     """ Region mean color
 
     Parameters
@@ -61,7 +67,8 @@ def region_dominant_colors(img, region, colors = 8):
         color/gray image
     region: dict
         dictionary containing the coordinates of the region
-    bins:
+    color: int, optional
+        number of color clusters
 
     Returns
     -------
@@ -70,7 +77,9 @@ def region_dominant_colors(img, region, colors = 8):
     error: float
         squared error of the clustering process
     """
+     # construct adavanced indexing
+    coords = [c for c in region["coords"]] + [slice(img.shape[-1])]
 
-    values = img[region["coords"][0], region["coords"][1],:]
-    cb, error =  kmeans(values,colors)
+    values = img[coords]
+    cb, error = kmeans(values, colors)
     return cb, error

@@ -1,8 +1,7 @@
 import heapq
 import numpy as np
-import matplotlib.pyplot as plt
 
-from skcv.graph.rag import rag, rag_temporal
+from skcv.graph import rag
 
 
 class TBPT:
@@ -15,8 +14,7 @@ class TBPT:
     """
 
     def __init__(self, video, partition, distance,
-                 optical_flow=None, use_flow_for_adjacency=False,
-                 update_partition=False, verbose=0):
+                 optical_flow=None, update_partition=False, verbose=0):
         """ Creates the Trajectory Binary Partition Tree
             from the initial partition using a specified
             distance
@@ -42,10 +40,8 @@ class TBPT:
         """
 
         #initial rag
-        if not use_flow_for_adjacency:
-            r, regions = rag(partition)
-        else:
-            r, regions = rag_temporal(partition, optical_flow)
+
+        r, regions = rag(partition, discard_axis=[0])
 
         #structures to save the tree topology
         self.nodes = {}

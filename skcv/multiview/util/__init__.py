@@ -7,3 +7,6 @@ from .points_functions import euclidean_to_homogeneous
 from .points_functions import homogeneous_to_euclidean
 from .points_functions import normalize_points
 
+from .camera import project
+from .camera import look_at_matrix
+

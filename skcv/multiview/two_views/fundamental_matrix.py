@@ -38,10 +38,10 @@ def eight_point_algorithm(x1, x2):
         a[:, i] = np.kron(x2n[:, i], x1n[:, i])
 
     # find F in the normalized coordinates and transform it
-    u,d,v = svd(a.T)
+    u, d, v = svd(a.T)
     f_matrix = np.reshape(v, (3, 3))
     f_matrix = t2.T*f_matrix*t1
-
+    
     return f_matrix
 
 

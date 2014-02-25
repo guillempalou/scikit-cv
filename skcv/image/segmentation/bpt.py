@@ -62,10 +62,7 @@ class BPT:
             self.nodes[e[1]]["childs"] = []
 
             #get the maximum used label
-            if e[0] > max_label:
-                max_label = e[0]
-            if e[1] > max_label:
-                max_label = e[1]
+            max_label = max(max_label, e[0], e[1])
 
         #make a heap (priority queue)
         heapq.heapify(dists)

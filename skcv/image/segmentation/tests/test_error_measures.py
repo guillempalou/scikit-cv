@@ -101,9 +101,9 @@ def test_explained_variation():
     ev = explained_variation(img, part)
     assert_equal(ev, 0.24242424242424243)
 
+    img[:, :, 0] = part
     img[:, :, 1] = part
     img[:, :, 2] = part
-    img[:, :, 3] = part
 
     ev = explained_variation(img, part)
     assert_equal(ev, 0)

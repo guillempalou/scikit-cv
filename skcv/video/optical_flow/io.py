@@ -16,26 +16,26 @@ def read_flow_file(path):
     #open the file
     f = open(path, "rb")
 
-    if (not f):
+    if (not f): # pragma: no cover
         raise IOError("File cannot be opened")
 
     #read the tag
     tag = f.read(4)
 
-    if tag != b"PIEH":
+    if tag != b"PIEH": # pragma: no cover
         raise TypeError("File type does not correspond to a flow file")
 
     #read the width and height
     width = np.fromfile(f, dtype=np.uint32, count=1)
     height = np.fromfile(f, dtype=np.uint32, count=1)
 
-    if width < 1 or width > 99999 or height < 1 or height > 99999:
+    if width < 1 or width > 99999 or height < 1 or height > 99999: # pragma: no cover
         raise ValueError("Width and height file not correct")
 
     #read flow data
     flow = np.fromfile(f, dtype=np.float32, count=width[0] * height[0] * 2)
 
-    if flow.size != width[0] * height[0] * 2:
+    if flow.size != width[0] * height[0] * 2: # pragma: no cover
         raise ValueError("Data flow too small %d != %d" % (flow.size, width[0] * height[0] * 2))
 
     #reshape the flow so that its shape is (height,width,2)
@@ -59,7 +59,7 @@ def write_flow_file(path, flow):
     #open the file for writing
     f = open(path, "wb")
 
-    if not f:
+    if not f: # pragma: no cover
         raise IOError("File cannot be opened")
 
     #read the tag

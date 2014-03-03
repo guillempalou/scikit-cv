@@ -11,18 +11,23 @@ def variation_reliability(flow, gamma=1):
     """ Calculates the flow variation reliability
     Parameters
     ----------
-    flow: numpy array with flow values
-    gamma: soft threshold
+    flow: numpy array
+    flow values
+
+    gamma: float, optional
+    soft threshold
 
     Returns
     -------
-    variation_reliability: reliability map (0 less reliable, 1 reliable)
+    variation reliability map (0 less reliable, 1 reliable)
     """
 
     #compute central differences
-    grad = np.gradient(flow[:, :, 0])
+    gradx = np.gradient(flow[:, :, 0])
+    grady = np.gradient(flow[:, :, 1])
 
-    norm_grad = grad[0] ** 2 + grad[1] ** 2 / (0.01 * np.sum(flow ** 2, axis=2) + 0.002)
+    norm_grad = (gradx[0] ** 2 + gradx[1] ** 2 +
+                 grady[0] ** 2 + grady[1] ** 2) / (0.01 * np.sum(flow ** 2, axis=2) + 0.002)
 
     norm_grad[norm_grad > 1e2] = 0
 
@@ -43,7 +48,7 @@ def occlusion_reliability(forward_flow, backward_flow, gamma=1):
     """
 
     #check dimensions
-    if (forward_flow.shape != backward_flow.shape):
+    if (forward_flow.shape != backward_flow.shape): #pragma: no cover
         raise ValueError("Array sizes should be the same")
 
     #compute warping flow
@@ -78,13 +83,16 @@ def structure_reliability(img, gamma=1):
     """ Calculates the flow structure reliability
     Parameters
     ----------
-    two_frames: numpy array containing the current and next frame
-    flow: numpy array with flow values
-    gamma: soft threshold
+    img: numpy array
+    image to compute the structure
+
+    gamma: float, optional
+    soft threshold
 
     Return
     ------
-    variation_reliability: reliability map (0 less reliable, 1 reliable)
+    reliability map (0 less reliable, 1 reliable)
+
     """
 
     #compute gradient of the image in the three channels
@@ -95,7 +103,7 @@ def structure_reliability(img, gamma=1):
 
     eps = 1e-6
 
-    for k in np.arange(img.shape[2]):
+    for k in np.arange(img.shape[-1]):
         grad = np.gradient(img[:, :, k])
         #compute components of the structure tensor
         wxx = filter.gaussian_filter(grad[0] ** 2, 1)

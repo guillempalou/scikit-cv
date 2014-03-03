@@ -18,9 +18,6 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
     reliability: numpy array
     A 3D array representing the flow reliability
 
-    consistent: bool, optional
-    whether the original partition is consistent from frame to frame
-
     matching_th: float, optional
     matching threshold for the bipartite matching
 
@@ -47,7 +44,7 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
 
     dimensions = len(partition.shape)
 
-    if dimensions != 3:
+    if dimensions != 3: #prama: no cover
         raise ValueError("Dimensions must be 3")
 
     # link regions across frames
@@ -64,7 +61,6 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
     current_label = np.max(np.unique(partition[0,...]))+1
 
     for frame in range(frames-1):
-        print("Tracking from frame {0} to {1}".format(frame, frame+1))
         labels = np.unique(new_partition[frame, ...])
         labels_next = np.unique(partition[frame+1, ...])
         # create a graph matching contours

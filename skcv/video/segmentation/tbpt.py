@@ -1,4 +1,5 @@
 import heapq
+
 import numpy as np
 
 from skcv.graph import rag
@@ -66,10 +67,7 @@ class TBPT:
             self.nodes[e[1]]["childs"] = []
 
             #get the maximum used label
-            if e[0] > max_label:
-                max_label = e[0]
-            if e[1] > max_label:
-                max_label = e[1]
+            max_label = max(max_label, e[0], e[1])
 
         #make a heap (priority queue)
         heapq.heapify(dists)
@@ -81,7 +79,7 @@ class TBPT:
         n_regions = len(regions)
         max_label += 1
 
-        if (verbose > 0):
+        if verbose > 0:  # pragma : no cover
             print("Performing {0} merges".format(n_regions - 1, max_label))
 
         for n in range(n_regions - 1):
@@ -91,7 +89,7 @@ class TBPT:
             while (to_merge[1] in merged) or (to_merge[2] in merged):
                 to_merge = heapq.heappop(dists)
 
-            if (verbose > 1):
+            if verbose > 1:  # pragma : no cover
                 print("Merging {0} and {1} to {2} with distance ".format(
                     to_merge[1],
                     to_merge[2],
@@ -119,12 +117,14 @@ class TBPT:
             edges = r.edges([to_merge[1], to_merge[2]])
             for e in edges:
                 r.add_edge(max_label, e[1])
-                heapq.heappush(dists,
-                               (distance(image,
-                                         regions[max_label],
-                                         regions[e[1]]),
-                                max_label,
-                                e[1]))
+                if optical_flow is not None:
+                    dist = distance(video, optical_flow,
+                                    regions[e[0]], regions[e[1]])
+                else:
+                    dist = distance(video,
+                                    regions[e[0]], regions[e[1]])
+
+                heapq.heappush(dists, (dist, max_label, e[1]))
 
             #remove the two nodes and edges
             r.remove_edges_from(edges)

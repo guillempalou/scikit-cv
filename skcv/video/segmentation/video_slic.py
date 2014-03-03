@@ -31,9 +31,9 @@ def video_slic(video, n_segments, compactness=10):
     width = video.shape[1]
     height = video.shape[2]
 
-    if d == 3:
+    if d == 3:  # pragma: no cover
         video = video[..., np.newaxis]
-    elif d != 4:
+    elif d != 4:  # pragma: no cover
         raise ValueError('Video should have 3 or 4 dimensions')
 
     n_frames = video.shape[0]

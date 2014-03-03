@@ -3,6 +3,7 @@ from numpy.testing import assert_almost_equal
 
 from skcv.image.segmentation.region_descriptors import region_mean_color
 from skcv.image.segmentation.region_descriptors import region_color_histograms
+from skcv.image.segmentation.region_descriptors import region_dominant_colors
 
 def test_mean_color():
     img = np.zeros((10,10,3))
@@ -48,5 +49,41 @@ def test_histograms():
             k += 1
 
 def test_dominant_colors():
-    #TODO
+
+    N = 100
+    M = 100
+
+    part = np.zeros((N,M))
+
+    part[:N/2,:M/2] = 0
+    part[N/2:,:M/2] = 1
+    part[:N/2,M/2:] = 2
+    part[N/2:,M/2:] = 3
+
+    f = lambda r, c, d: (part[r.astype(np.int),c.astype(np.int)]/4 + d/12)
+
+    img = np.fromfunction(f,
+                          (N, M, 3),
+                          dtype=np.float64)
+
+    k = 0
+    for i in range(4):
+        region = {"coords": np.where(part == i)}
+        colors, error = region_dominant_colors(img, region)
+        #it will only find one color
+        color = img[region['coords']][0,...]
+        assert_almost_equal(colors[0], color)
+        assert_almost_equal(error, 0)
+
+    # get a whole region covering the whole image
+    region = {"coords": np.where(part < 5)}
+    colors, error = region_dominant_colors(img, region)
+
+    gt_colors = np.zeros((4,3))
+    gt_colors[0, :] = img[np.where(part == 3)][0, ...]
+    gt_colors[1, :] = img[np.where(part == 1)][0, ...]
+    gt_colors[2, :] = img[np.where(part == 0)][0, ...]
+    gt_colors[3, :] = img[np.where(part == 2)][0, ...]
+    assert_almost_equal(error, 0)
+
     pass

@@ -7,7 +7,7 @@ from math import sqrt
 def undersegmentation_error(partition, groundtruth,
                             tolerance=0.05):
     """ Computes the undersegmentation error defined as:
-        err(G_i) = (sum_{Area(S_i)} - area(G_i)) / area(G_i)
+        ue(G_i) = (sum_{Area(S_i)} - area(G_i)) / area(G_i)
         where G_i is the groundtruth and
         S_i is the obtained partition
         The total error is the average accross regions
@@ -67,7 +67,57 @@ def undersegmentation_error(partition, groundtruth,
     return err / len(gt_list)
 
 def segmentation_accuracy(partition, groundtruth):
-    pass
+    """ Computes the segmentation accuracy defined as:
+        accu(G_i) = (sum_{Area(S_k) \in area(G_i)}) / area(G_i)
+        where G_i is the groundtruth and
+        S_k is the obtained partition where the majority of S_k is in G_i
+        The total error is the average accross regions
+
+        Parameters
+        ----------
+        partition: (N,M) array
+            array with obtained labels
+
+        groundtruth: (N,M) array or list
+            array(list with groundtruth labels
+
+        Returns
+        -------
+        The segmentation accuracy
+    """
+    gt_list = [];
+    if type(groundtruth) != list:
+        gt_list.append(groundtruth)
+    else:
+        gt_list = gt_list + groundtruth
+
+    # partition labels
+    seg_labels = np.unique(partition)
+
+    # evaluate each groundtruth segmentation
+    accu = 0
+    for segmentation in gt_list:
+        gt_labels = np.unique(segmentation)
+
+        #find the area of each segment
+        area = np.bincount(segmentation.astype(np.int).flatten())
+
+        accu_s = 0
+
+        # match each pixel to a groundtruth segment
+        for s_k in seg_labels:
+            coords = np.where(partition == s_k)
+
+            #find the intersection
+            intersection = np.bincount(segmentation[coords].flatten().astype(np.int))
+
+            # get the maximum intersecting groundtruth segment
+            g_i = np.argmax(intersection)
+            accu_s += intersection[g_i] / area[g_i]
+
+        accu += accu_s/len(gt_labels)
+
+    return accu / len(gt_list)
 
 def boundary_detection(partition, groundtruth, tolerance = 0.04):
     """ Measures boundary detection
@@ -165,5 +215,34 @@ def boundary_detection(partition, groundtruth, tolerance = 0.04):
 
     return precision, recall
 
-def explained_variation(img, partition, groundtruth):
-    pass
+def explained_variation(img, partition):
+    """ Computes the explained variation defined as:
+    sum over voxels (\mu_i - \mu) / (\voxel - \mu)
+    where \mu is the video mean and \mu_i is the region mean
+    """
+    # partition labels
+    seg_labels = np.unique(partition)
+
+    dimensions = img.shape
+
+    #compute the color mean
+    mu = np.zeros(dimensions[-1])
+
+    #create an array to compute the mse error
+    mse = np.zeros(dimensions[:-1])
+
+    for i in range(dimensions[-1]):
+        mu[i] = np.mean(img[..., i])
+        mse += (img[..., i] - mu[i])**2
+
+    #sum the error
+    mse_error = np.sum(mse)
+
+    #find the mse error for each
+    mse_reg = 0
+    for segment in seg_labels:
+        coords = np.where(partition == segment)
+        mu_i = np.mean(img[coords], axis=0)
+        mse_reg += np.sum((img[coords] - mu_i)**2)
+
+    return mse_reg / mse_error

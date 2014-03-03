@@ -7,8 +7,8 @@ def euclidean_to_homogeneous(x):
 
     Parameters
     ----------
-    x: numpy array (2,N), (3,N)
-    each column of the array is a 2D or 3D point
+    x: numpy array
+    each column of the array is a point
 
 
     Returns
@@ -16,12 +16,6 @@ def euclidean_to_homogeneous(x):
     xh: numpy array,
     x in euclidean coordinates
     """
-
-    if x.shape[0] != 2 and x.shape[0] != 3:
-        raise TypeError("Input should be 2D or 3D")
-
-    if len(x.shape) != 2:
-        raise TypeError("Input type with wrong dimensions")
 
     xe = np.vstack((x, np.ones(x.shape[1])))
 
@@ -34,19 +28,13 @@ def homogeneous_to_euclidean(xh):
     Parameters
     ----------
     x: numpy array (3,N), (4,N)
-    each column of the array is a 3D or 4D point
+    each column of the array is a point
 
     Returns
     -------
     xh: numpy array,
     x in homogeneous coordinates
     """
-
-    if xh.shape[0] != 3 and xh.shape[0] != 4:
-        raise TypeError("Input should be 2D or 3D")
-
-    if len(xh.shape) != 2:
-        raise TypeError("Input type with wrong dimensions")
 
     return xh[0:-1, :]/xh[-1, :]
 

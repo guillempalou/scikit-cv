@@ -22,7 +22,8 @@ def test_bpt():
                           (N, M, 3),
                           dtype=np.float64)
 
-    b = BPT(img,part,mean_color_distance)
+    b = BPT(img,part,mean_color_distance,update_partition=True)
+
     assert_equal(b.nodes[0]["childs"], [])
     assert_equal(b.nodes[1]["childs"], [])
     assert_equal(b.nodes[2]["childs"], [])

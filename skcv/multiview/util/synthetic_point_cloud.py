@@ -28,8 +28,6 @@ def random_sphere(N, radius, center=None):
                        radius*np.sqrt(1-u**2)*np.sin(theta), radius*u))
 
     if center is not None:
-        if center.shape[0] != 3 or len(center.shape) != 1:
-            raise TypeError("Center must have 3 dimensions")
         c = np.repeat(center, N)
         c = np.reshape(c, (3, N))
         points += c
@@ -60,10 +58,15 @@ def random_ball(N, radius, center=None):
     x = np.random.normal(0, 1, (3, N))
     norm = np.linalg.norm(x, axis=0)
 
-
     points = radius * np.power(r, 1./3.) * x/norm
 
+    if center is not None:
+        c = np.repeat(center, N)
+        c = np.reshape(c, (3, N))
+        points += c
+
     return points
+
 
 def random_cube(N, size, center=None):
     """
@@ -87,3 +90,10 @@ def random_cube(N, size, center=None):
     face = np.random.randint(0, 3, N)
     side = 2*np.random.randint(0, 2, N)-1
     x[face, np.arange(0, N)] = (0.5*size)*side
+
+    if center is not None:
+        c = np.repeat(center, N)
+        c = np.reshape(c, (3, N))
+        x += c
+
+    return x

@@ -4,26 +4,35 @@ import numpy as np
 from scipy.interpolate import griddata
 from skimage import filter
 
+import matplotlib.pyplot as plt
+
+
 def variation_reliability(flow, gamma=1):
     """ Calculates the flow variation reliability
     Parameters
     ----------
-    flow: numpy array with flow values
-    gamma: soft threshold
+    flow: numpy array
+    flow values
+
+    gamma: float, optional
+    soft threshold
 
     Returns
     -------
-    variation_reliability: reliability map (0 less reliable, 1 reliable)
+    variation reliability map (0 less reliable, 1 reliable)
     """
 
     #compute central differences
-    grad = np.gradient(flow[:,:,0])
+    gradx = np.gradient(flow[:, :, 0])
+    grady = np.gradient(flow[:, :, 1])
 
-    norm_grad = grad[0]**2 + grad[1]**2 / (0.01*np.sum(flow**2,axis=2)+0.002)
+    norm_grad = (gradx[0] ** 2 + gradx[1] ** 2 +
+                 grady[0] ** 2 + grady[1] ** 2) / (0.01 * np.sum(flow ** 2, axis=2) + 0.002)
 
     norm_grad[norm_grad > 1e2] = 0
 
-    return np.exp(-norm_grad/gamma)
+    return np.exp(-norm_grad / gamma)
+
 
 def occlusion_reliability(forward_flow, backward_flow, gamma=1):
     """ Calculates the flow variation reliability
@@ -39,69 +48,78 @@ def occlusion_reliability(forward_flow, backward_flow, gamma=1):
     """
 
     #check dimensions
-    if (forward_flow.shape != backward_flow.shape):
+    if (forward_flow.shape != backward_flow.shape): #pragma: no cover
         raise ValueError("Array sizes should be the same")
 
     #compute warping flow
-    xcoords = np.arange(0,forward_flow.shape[0])
-    ycoords = np.arange(0,forward_flow.shape[1])
-    xx,yy = np.meshgrid(xcoords,ycoords)
+    xcoords = np.arange(0, forward_flow.shape[0])
+    ycoords = np.arange(0, forward_flow.shape[1])
+    xx, yy = np.meshgrid(ycoords, xcoords)
     coords = (xx.flatten(), yy.flatten())
 
     #find the warped flow
-    warped_flow = np.zeros(forward_flow.shape)
-    warped_flow[:,:,0] = xx + forward_flow[:,:,0]
-    warped_flow[:,:,1] = yy + forward_flow[:,:,0] 
-    warped_coords = (warped_flow[:,:,0].flatten(), warped_flow[:,:,1].flatten())
+    warped_flow = np.zeros_like(forward_flow)
+    warped_flow[:, :, 0] = xx + forward_flow[:, :, 0]
+    warped_flow[:, :, 1] = yy + forward_flow[:, :, 1]
+    warped_coords = (warped_flow[:, :, 0].flatten(), warped_flow[:, :, 1].flatten())
 
     #interpolate flow values
-    fx = griddata(coords, backward_flow[:,:,0].flatten(), warped_coords, method='linear',fill_value=0)
-    fy = griddata(coords, backward_flow[:,:,1].flatten(), warped_coords, method='linear',fill_value=0)
-    interpolated_flow = np.zeros(forward_flow.shape)
-    interpolated_flow[:,:,0] = fx.reshape(10,10)
-    interpolated_flow[:,:,1] = fy.reshape(10,10)
+    fx = griddata(coords, backward_flow[:, :, 0].flatten(), warped_coords, method='linear', fill_value=0)
+    fy = griddata(coords, backward_flow[:, :, 1].flatten(), warped_coords, method='linear', fill_value=0)
+
+    interpolated_flow = np.zeros_like(forward_flow)
+    interpolated_flow[:, :, 0] = fx.reshape(backward_flow.shape[:2])
+    interpolated_flow[:, :, 1] = fy.reshape(backward_flow.shape[:2])
 
     #find the forward-backward consistency
-    result = np.sum((forward_flow + interpolated_flow)**2,axis=2) / (0.01*(np.sum(forward_flow**2,axis=2) + np.sum(interpolated_flow**2,axis=2)) + 0.5)
+    result = np.sum((forward_flow + interpolated_flow) ** 2, axis=2) / \
+             (0.01 * (np.sum(forward_flow ** 2, axis=2) +
+                      np.sum(interpolated_flow ** 2, axis=2)) + 0.5)
 
-    return np.exp(-result/gamma)
+    return np.exp(-result / gamma)
 
 
 def structure_reliability(img, gamma=1):
     """ Calculates the flow structure reliability
     Parameters
     ----------
-    two_frames: numpy array containing the current and next frame
-    flow: numpy array with flow values
-    gamma: soft threshold
+    img: numpy array
+    image to compute the structure
+
+    gamma: float, optional
+    soft threshold
 
     Return
     ------
-    variation_reliability: reliability map (0 less reliable, 1 reliable)
+    reliability map (0 less reliable, 1 reliable)
+
     """
 
     #compute gradient of the image in the three channels
 
     #kernel for blurring
 
-    structure_reliability = np.zeros((img.shape[0],img.shape[1]))
+    st = np.zeros((img.shape[0], img.shape[1]))
 
-    for k in np.arange(img.shape[2]):
-        grad = np.gradient(img[:,:,k])
+    eps = 1e-6
+
+    for k in np.arange(img.shape[-1]):
+        grad = np.gradient(img[:, :, k])
         #compute components of the structure tensor
-        Wxx = filter.gaussian_filter(grad[0]**2,1)
-        Wxy = filter.gaussian_filter(grad[0]*grad[1],1)
-        Wyy = filter.gaussian_filter(grad[1]**2,1)
+        wxx = filter.gaussian_filter(grad[0] ** 2, 1)
+        wxy = filter.gaussian_filter(grad[0] * grad[1], 1)
+        wyy = filter.gaussian_filter(grad[1] ** 2, 1)
 
         #determinant and trace
-        Wdet = Wxx*Wyy - Wxy**2
-        Wtr = Wxx + Wyy
+        wdet = wxx * wyy - wxy ** 2
+        wtr = wxx + wyy
 
-        structure_reliability = structure_reliability + Wdet/Wtr
+        st += wdet / (wtr + eps)
 
-    avg = structure_reliability.mean();
+    avg = st.mean()
 
-    return 1-np.exp(-(structure_reliability)/(0.7*avg*gamma))
+    return 1 - np.exp(-st / (0.7 * avg * gamma))
+
 
 def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
     """
@@ -121,14 +139,14 @@ def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
     #soft threshold
     gamma = 1
 
-    if (use_structure):
-        structure_reliability = structure_reliability(img, gamma)
+    if use_structure:
+        st = structure_reliability(img, gamma)
     else:
-        structure_reliability = np.ones((img.shape[0],img.shape[1]))
+        st = np.ones((img.shape[0], img.shape[1]))
 
     #compute the different reliabilities
-    var = variation_reliability(forward_flow,gamma)
+    var = variation_reliability(forward_flow, gamma)
     occ = occlusion_reliability(forward_flow, backward_flow)
 
     #return the minimum of the three
-    return np.mininum(structure_reliability,np.minimum(var,occ))
+    return np.minimum(st, np.minimum(var, occ))

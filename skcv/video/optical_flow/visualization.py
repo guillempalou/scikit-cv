@@ -65,10 +65,10 @@ def flow_to_image(flow):
     flow: flow array (M,N,2) where M and N are the width and height respectively
     """
 
-    if (len(flow.shape) != 3):
+    if len(flow.shape) != 3:  # pragma no cover
         raise ValueError("Flow must be of the form (M,N,2)")
 
-    if (flow.shape[2] != 2):
+    if flow.shape[2] != 2:  # pragma no cover
         raise ValueError("Flow must be of the form (M,N,2)")
 
     #copy data so we do not change values

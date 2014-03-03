@@ -26,7 +26,7 @@ def project(points, cameras):
     return projections
 
 
-def look_at_matrix(center, look_at):
+def look_at_matrix(center, look_at, up_vector = np.array((0,1,0))):
     """ Generates camera matrix using a center at a look at point
        
         Parameters
@@ -36,7 +36,10 @@ def look_at_matrix(center, look_at):
         
         look_at: numpy array
         Vector representing the point to look at
-        
+
+        up_vector: numpy array, option
+        The camera up vector
+
         Returns
         -------
         External camera matrix
@@ -44,20 +47,19 @@ def look_at_matrix(center, look_at):
     
     # form the pointing vector. the camera looks at -w
     w = center - look_at
-    w = w / norm(w)
+    nw = w / norm(w)
     
     # form the up vector
-    u = np.cross(np.array((0, 0, 1)), w)
-    u = u / norm(u)
+    u = np.cross(up_vector, nw)
+    nu = u / norm(u)
     
     # form the last vector
-    v = np.cross(w,u)
-    v = v / norm(v)
+    v = np.cross(nw, nu)
+    nv = v / norm(v)
     
     #build the camera matrix
-    external = np.vstack((u,v,w))
+    external = np.vstack((nu, nv, nw))
     rt = np.dot(external, -center)
-    external = np.hstack((external,rt[:,np.newaxis]))
+    external = np.hstack((external, rt[:, np.newaxis]))
     
     return external
-        

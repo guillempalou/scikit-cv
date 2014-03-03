@@ -33,14 +33,21 @@ def eight_point_algorithm(x1, x2):
     x2n, t2 = normalize_points(x2, is_homogeneous=True)
 
     # build the vector
-    a = np.zeros((9, n_points))
-    for i in range(n_points):
-        a[:, i] = np.kron(x2n[:, i], x1n[:, i])
+    a = np.vstack((x2n[0, :] * x1n,
+                   x2n[1, :] * x1n,
+                   x2n[2, :] * x1n))
 
     # find F in the normalized coordinates and transform it
-    u, d, v = svd(a.T)
-    f_matrix = np.reshape(v, (3, 3))
-    f_matrix = t2.T*f_matrix*t1
+    u, d, v = svd(a.T, full_matrices=True)
+    f_matrix = np.reshape(v[8,:], (3, 3))
+
+    # force the rank 2 constraint
+    u, d, v = svd(f_matrix, full_matrices=True)
+    d[2] = 0
+    f_matrix = np.dot(u, np.dot(np.diag(d), v))
+
+    # transform coordinates
+    f_matrix = np.dot(t2.T, np.dot(f_matrix, t1))
     
     return f_matrix
 

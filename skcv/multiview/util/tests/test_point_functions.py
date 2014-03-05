@@ -48,3 +48,14 @@ def test_normalize_points():
     x_n, t = normalize_points(points_h, is_homogeneous=True)
     assert_almost_equal(x_n, np.vstack((x_gt, ones)))
     assert_almost_equal(t, t_gt)
+
+
+def test_hnormalize():
+    Xh2D = np.array((10, 4, 2))
+    Xh3D = np.array((3, 6, 9, 3))
+
+    xh2D = hnormalize(Xh2D)
+    xh3D = hnormalize(Xh3D)
+
+    assert_almost_equal(xh2D, (5, 2, 1))
+    assert_almost_equal(xh3D, (1, 2, 3, 1))

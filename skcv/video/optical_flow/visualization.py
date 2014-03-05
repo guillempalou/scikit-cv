@@ -128,7 +128,7 @@ def flow_to_image(flow):
         col1 = t[k1] * 1.0 / 255
         col = (1 - f) * col0 + f * col1
 
-        col[idx] = 1 - norm[idx] * (1 - col[idx])
+        col[idx] = 1 - np.exp(-norm[idx]) * (1 - col[idx]);
         col[~idx] *= 0.75
 
         flow_img[:, :, i] = np.floor(255 * col * (1 - idx_nan))

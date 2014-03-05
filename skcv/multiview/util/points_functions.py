@@ -39,6 +39,26 @@ def homogeneous_to_euclidean(xh):
     return xh[0:-1, :]/xh[-1, :]
 
 
+def hnormalize(x):
+    """
+    Normalizes the last coordinate to be 1
+
+    Parameters
+    ----------
+
+    x: numpy array
+    each column of the array is a point
+
+    Returns
+    -------
+    an array with points normalized
+
+    """
+    if len(x.shape) == 1:
+        x = x[:, np.newaxis]
+
+    return np.squeeze(x / x[-1, :])
+
 def normalize_points(x, is_homogeneous=False):
     """
     Normalizes points so that they have mena 0 and variance 1

@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import svd
 from math import log
+from scipy.optimize import leastsq
 
 from skcv.multiview.util import normalize_points
 
@@ -181,12 +182,30 @@ def reprojection_error(x1, x2, f_matrix):
 
     """
 
+def __sampson_residual(f, x1, x2):
+    """
+    computes the residual of the sampson error
+    """
+    f_matrix = np.reshape(f, (3, 3))
+
+    f_x1 = np.dot(f_matrix, x1)
+    f_x2 = np.dot(f_matrix.T, x2)
+
+    #get the denominator
+    den = np.sum(f_x1[:2, :] ** 2, axis=0) +\
+          np.sum(f_x2[:2, :] ** 2, axis=0)
+
+    #get the numerator
+    num = np.sum((x2 * f_x1), axis=0)
+
+    return num / np.sqrt(den)
 
 def robust_f_estimation(x1, x2,
                         max_iter=1000,
                         distance='sampson',
                         n_samples=8,
                         prob = 0.99,
+                        refine_result=True,
                         inlier_threshold=2):
     """ Computes the fundamental matrix using the eight point algorithm
     (Hartley 1997)
@@ -210,6 +229,9 @@ def robust_f_estimation(x1, x2,
 
     prob: float, optional
     probability of having a free from outliers sample
+
+    refine_result: bool, optional
+    whether after RANSAC a non linear estimation is performed
 
     inlier_threshold: float, optional
     maximum distance to consider a point pair inlier
@@ -255,13 +277,12 @@ def robust_f_estimation(x1, x2,
 
         #update max_iterations if estimation is improved
         # the epsilon (1e-10) is added in case of all inliers
-        eps = 1 - n_inliers / n_points + 1e-10
-        new_iter = log(1 - prob) / log(1 - (1-eps)**n_samples)
+        eps = 1 - n_inliers / n_points
+        new_iter = log(1 - prob) / log(1e-10 + 1 - (1-eps)**n_samples)
 
         if new_iter < max_iter:
             max_iter = new_iter
 
-        print(n_inliers, max_iter)
         iteration += 1
 
     #refine the estimate using all inliers
@@ -269,5 +290,12 @@ def robust_f_estimation(x1, x2,
     best_x2 = x2[:, best_inliers]
 
     f_matrix = eight_point_algorithm(best_x1, best_x2)
+
+    if refine_result:
+        if distance == 'sampson':
+
+            f = np.reshape(f_matrix, 9)
+            f_matrix, jac = leastsq(__sampson_residual, f, args=(best_x1, best_x2))
+            f_matrix = np.reshape(f_matrix, (3, 3))
 
     return f_matrix

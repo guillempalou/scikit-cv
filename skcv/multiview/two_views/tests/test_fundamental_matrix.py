@@ -92,6 +92,7 @@ def test_eight_point_algorithm():
 
     assert_almost_equal(f_matrix, f_groundtruth)
 
+
 def test_robust_f_estimation():
     projections_file = os.path.join(data_dir, 'two_view_projections.dat')
 

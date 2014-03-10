@@ -42,11 +42,11 @@ def cython(pyx_files, working_path=''):
             c_file = pyxfile[:-4] + '.cpp'
 
             # run cython compiler
-            cmd = 'cython -o %s %s' % (c_file, pyxfile)
+            cmd = 'cython --cplus -o %s %s' % (c_file, pyxfile)
             print(cmd)
 
             try:
-                subprocess.call(['cython', '-o', '--cplus', c_file, pyxfile])
+                subprocess.call(['cython', '--cplus', '-o', c_file, pyxfile])
             except WindowsError:
                 # On Windows cython.exe may be missing if Cython was installed
                 # via distutils. Run the cython.py script instead.
@@ -54,9 +54,8 @@ def cython(pyx_files, working_path=''):
                     [sys.executable,
                      os.path.join(os.path.dirname(sys.executable),
                                   'Scripts', 'cython.py'),
-                     '-o', c_file, pyxfile],
+                      '--cplus', '-o', c_file, pyxfile],
                     shell=True)
-
 
 def _md5sum(f):
     m = hashlib.new('md5')

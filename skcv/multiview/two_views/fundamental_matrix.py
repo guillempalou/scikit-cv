@@ -12,14 +12,14 @@ def fundamental_matrix_from_two_cameras(camera1, camera2):
     Parameters
     ----------
     camera1: numpy array
-    Projection matrix of first camera
+        Projection matrix of first camera
 
     camera2: numpy array
-    Projection matrix of second camera
+        Projection matrix of second camera
 
     Returns
     -------
-    fundamental matrix
+    Fundamental matrix
 
     """
 
@@ -48,10 +48,10 @@ def eight_point_algorithm(x1, x2):
     Parameters
     ----------
     x1: numpy array
-    projections of points in the first image, in homogeneous coordinates
+        projections of points in the first image, in homogeneous coordinates
 
     x2: numpy array
-    projections of points in the second image, in homogeneous coordinates
+        projections of points in the second image, in homogeneous coordinates
 
     Returns
     -------
@@ -92,6 +92,13 @@ def right_epipole(f_matrix):
     Computes the right epipole (first image) of fundamental matrix
     the right epipole satisfies Fe = 0
 
+    **Parameters**
+        f_matrix: numpy array
+            Fundamental matrix
+
+    **Returns**
+        the right epipole
+
     """
 
     u, d, vh = svd(f_matrix)
@@ -101,7 +108,15 @@ def right_epipole(f_matrix):
 def left_epipole(f_matrix):
     """
     Computes the right epipole (first image) of fundamental matrix
-    the right epipole satisfies Fe = 0
+    the left epipole satisfies Fe = 0
+
+    **Parameters**
+        f_matrix: numpy array
+            Fundamental matrix
+
+    **Returns**
+        the left epipole
+
 
     """
 
@@ -112,6 +127,14 @@ def left_epipole(f_matrix):
 def canonical_cameras_from_f(f_matrix):
     """
     Retrieves the two canonical cameras given a fundamental matrix
+
+    **Parameters**
+        f_matrix: numpy array
+            Fundamental matrix
+
+    **Returns**
+        one pair of canonical cameras
+
 
     """
     # the first camera is the identity
@@ -212,6 +235,7 @@ def robust_f_estimation(x1, x2,
 
     Parameters
     ----------
+
     x1: numpy array
     projections of points in the first image, in homogeneous coordinates
 

@@ -7,56 +7,73 @@ Includes: image and video segmentation, optical flow, n-view geometry
 
 """
 
-DISTNAME            = 'skicit-cv'
-DESCRIPTION         = 'Computer Vision library for Python'
-LONG_DESCRIPTION    = descr
-MAINTAINER          = 'Guillem Palou'
-MAINTAINER_EMAIL    = 'guillem.palou@gmail.com'
-URL                 = 'http://github.com/guillempalou/scikit-cv'
-LICENSE             = 'MIT'
-DOWNLOAD_URL        = 'http://github.com/guillempalou/scikit-cv'
-VERSION             = '0.1dev'
-PYTHON_VERSION      = (3, 3)
-DEPENDENCIES        = {
-                        'numpy': (1, 6),
-                        'Cython': (0, 17),
-                        'six': (1, 3),
-                        'skimage': (0, 9),
-                        'sklearn': (0, 14),
-                        'networkx': (1, 8)
-                      }
-
+DISTNAME = 'skicit-cv'
+DESCRIPTION = 'Computer Vision library for Python'
+LONG_DESCRIPTION = descr
+MAINTAINER = 'Guillem Palou'
+MAINTAINER_EMAIL = 'guillem.palou@gmail.com'
+URL = 'http://github.com/guillempalou/scikit-cv'
+LICENSE = 'MIT'
+DOWNLOAD_URL = 'http://github.com/guillempalou/scikit-cv'
+VERSION = '0.1dev'
+PYTHON_VERSION = (3, 3)
+DEPENDENCIES = {
+    'numpy': (1, 6),
+    'Cython': (0, 17),
+    'six': (1, 3),
+    'skimage': (0, 9),
+    'sklearn': (0, 14),
+    'networkx': (1, 8)
+    #'numpydoc': (0, 4)
+}
 
 import os
 import sys
 import re
-import setuptools
-from numpy.distutils.core import setup
-from distutils.command.build_py import build_py
+import glob
+import setuptools # setuptools need to be imported before distutils
+from distutils.core import setup, Extension
 
+# get the numpoy include directories
+from numpy.distutils.misc_util import get_numpy_include_dirs
 
-def configuration(parent_package='', top_path=None):
-    if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+from _build import cython
 
-    from numpy.distutils.misc_util import Configuration
-    config = Configuration(None, parent_package, top_path)
+def configure_extensions():
 
-    config.set_options(
-            ignore_setup_xxx_py=True,
-            assume_default_configuration=True,
-            delegate_options_to_subpackages=True,
-            quiet=True)
+    if os.path.exists('MANIFEST'):
+        os.remove('MANIFEST')
 
-    config.add_subpackage('skcv')
-    config.add_data_dir('skcv/data')
+    # search for all cython files and build them as modules
+    # in the corresponding subpackage
+    packages = setuptools.find_packages('.')
 
-    return config
+    exts = []
+
+    for package in packages:
+
+        working_path = os.path.join(*package.split('.'))
+        pyx_paths = glob.glob(os.path.join(working_path, '*.pyx'))
+        pyx_files = [path.split('/')[-1] for path in pyx_paths]
+
+        for pyx_file in pyx_files:
+            cython([pyx_file], working_path=working_path)
+            name = pyx_file[:-4]
+            full_path = os.path.join(working_path, name + '.cpp')
+
+            e = Extension(name=package + "." + name,
+                          sources=[full_path],
+                          include_dirs=get_numpy_include_dirs())
+
+            exts.append(e)
+
+    return exts
 
 
 def write_version_py(filename='skcv/version.py'):
-    template = """# THIS FILE IS GENERATED FROM THE SCIKIT-CV SETUP.PY
-version='%s'
-"""
+    template = ("# THIS FILE IS GENERATED FROM THE SCIKIT-CV SETUP.PY\n"
+                "version='%s'\n"
+                )
 
     vfile = open(os.path.join(os.path.dirname(__file__),
                               filename), 'w')
@@ -103,10 +120,13 @@ def check_requirements():
 
 
 if __name__ == "__main__":
-
     check_requirements()
 
     write_version_py()
+
+    extensions = configure_extensions()
+
+    data_dirs = {'skcv': ['data/*']}
 
     setup(
         name=DISTNAME,
@@ -135,11 +155,14 @@ if __name__ == "__main__":
             'Operating System :: MacOS',
         ],
 
-        configuration=configuration,
 
         packages=setuptools.find_packages(exclude=['doc']),
-        include_package_data=True,
-        zip_safe=False, # the package can run out of an .egg file
+        package_data=data_dirs,
 
-        cmdclass={'build_py': build_py},
+        ext_modules=extensions,
+        include_package_data=True,
+
+        zip_safe=False,  # the package can run out of an .egg file
     )
+
+

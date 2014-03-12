@@ -3,14 +3,19 @@ script.py
 scratch
 
 *.py[cod]
+*.md5
 
 # C extensions
 *.so
+*.cpp
+*.c
+
 
 # Packages
 *.egg
 *.egg-info
 .idea
+doc
 dist
 build
 eggs

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/scikit-cv.iml" filepath="$PROJECT_DIR$/.idea/scikit-cv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../scikit-image/.idea/scikit-image.iml" filepath="$PROJECT_DIR$/../scikit-image/.idea/scikit-image.iml" />
       <module fileurl="file://$PROJECT_DIR$/../vision/.idea/vision.iml" filepath="$PROJECT_DIR$/../vision/.idea/vision.iml" />
     </modules>
   </component>

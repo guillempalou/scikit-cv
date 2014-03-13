@@ -1,1 +1,3 @@
-__author__ = 'guillem'
+from . import features
+from . import segmentation
+from . import filter

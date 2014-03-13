@@ -1,18 +1,20 @@
-__author__ = 'guillem'
-
 import numpy as np
 
 
 def read_flow_file(path):
     """ Reads flow file and returns 2D numpy array
+
     Parameters
     ----------
-    path: file path to read
+    path: string
+        file path to read
 
-    Return
-    ------
-    flow: a (M,N,2) numpy array containing the 2D flow vectors for each position (x,y)
+    Returns
+    -------
+    numpy array containing the 2D flow vectors for each position (x,y)
+
     """
+
     #open the file
     f = open(path, "rb")
 
@@ -29,13 +31,13 @@ def read_flow_file(path):
     width = np.fromfile(f, dtype=np.uint32, count=1)
     height = np.fromfile(f, dtype=np.uint32, count=1)
 
-    if width < 1 or width > 99999 or height < 1 or height > 99999: # pragma: no cover
+    if width < 1 or width > 99999 or height < 1 or height > 99999:  # pragma: no cover
         raise ValueError("Width and height file not correct")
 
     #read flow data
     flow = np.fromfile(f, dtype=np.float32, count=width[0] * height[0] * 2)
 
-    if flow.size != width[0] * height[0] * 2: # pragma: no cover
+    if flow.size != width[0] * height[0] * 2:  # pragma: no cover
         raise ValueError("Data flow too small %d != %d" % (flow.size, width[0] * height[0] * 2))
 
     #reshape the flow so that its shape is (height,width,2)
@@ -48,11 +50,15 @@ def read_flow_file(path):
 
 
 def write_flow_file(path, flow):
-    """ Writes flow file and returns 2D numpy array
+    """ Writes flow file to file
+
     Parameters
     ----------
-    path: file path to write
-    flow:
+    path: string
+        file path to write
+
+    flow: numpy array
+        flow values
 
     """
 
@@ -64,7 +70,6 @@ def write_flow_file(path, flow):
 
     #read the tag
     tag = f.write(b"PIEH")
-
 
     #write first the width and then the height
     shape = np.array((2, 1), dtype=np.uint32)

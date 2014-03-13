@@ -1,5 +1,3 @@
-__author__ = 'guillem'
-
 import numpy as np
 from skimage.segmentation import slic
 
@@ -11,7 +9,7 @@ def video_slic(video, n_segments, compactness=10):
     Parameters
     ----------
 
-    video: numpy array (frames, width, height, channels)
+    video: numpy array
         3 or 4 dimensional array representing the video, in CIE LAB
 
     n_segments: int
@@ -22,7 +20,7 @@ def video_slic(video, n_segments, compactness=10):
 
     Returns
     -------
-        partition: numpy array (width, height, frames)
+        partition: numpy array
             Array representing the partition
 
     """

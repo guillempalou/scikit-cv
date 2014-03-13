@@ -1,5 +1,3 @@
-__author__ = 'guillem'
-
 import math
 import numpy as np
 

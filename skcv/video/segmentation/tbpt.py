@@ -1,5 +1,4 @@
 import heapq
-
 import numpy as np
 
 from skcv.graph import rag

@@ -1,10 +1,7 @@
-__author__ = 'guillem'
-
 import numpy as np
 from scipy.interpolate import griddata
-from skimage import filter
 
-import matplotlib.pyplot as plt
+from skimage import filter
 
 
 def variation_reliability(flow, gamma=1):
@@ -12,10 +9,10 @@ def variation_reliability(flow, gamma=1):
     Parameters
     ----------
     flow: numpy array
-    flow values
+        flow values
 
     gamma: float, optional
-    soft threshold
+        soft threshold
 
     Returns
     -------
@@ -38,17 +35,22 @@ def occlusion_reliability(forward_flow, backward_flow, gamma=1):
     """ Calculates the flow variation reliability
     Parameters
     ----------
-    forward_flow: numpy array with forward flow values
-    backward_flow: numpy array with backward flow values
-    gamma: soft threshold
+    forward_flow: numpy array
+        forward flow values
+
+    backward_flow: numpy array
+        backward flow values
+
+    gamma: float, optional
+        soft threshold
 
     Return
     ------
-    variation_reliability: reliability map (0 less reliable, 1 reliable)
+    reliability map (0 less reliable, 1 reliable)
     """
 
     #check dimensions
-    if (forward_flow.shape != backward_flow.shape): #pragma: no cover
+    if forward_flow.shape != backward_flow.shape:  #pragma: no cover
         raise ValueError("Array sizes should be the same")
 
     #compute warping flow
@@ -73,8 +75,8 @@ def occlusion_reliability(forward_flow, backward_flow, gamma=1):
 
     #find the forward-backward consistency
     result = np.sum((forward_flow + interpolated_flow) ** 2, axis=2) / \
-             (0.01 * (np.sum(forward_flow ** 2, axis=2) +
-                      np.sum(interpolated_flow ** 2, axis=2)) + 0.5)
+                    (0.01 * (np.sum(forward_flow ** 2, axis=2) +
+                     np.sum(interpolated_flow ** 2, axis=2)) + 0.5)
 
     return np.exp(-result / gamma)
 
@@ -84,10 +86,10 @@ def structure_reliability(img, gamma=1):
     Parameters
     ----------
     img: numpy array
-    image to compute the structure
+    Image to compute the structure
 
     gamma: float, optional
-    soft threshold
+    Soft threshold
 
     Return
     ------
@@ -126,14 +128,21 @@ def flow_reliability(img, forward_flow, backward_flow, use_structure=True):
 
     Parameters
     ----------
-    @param img: image frame
-    @param forward_flow: flow from the current frame to the other
-    @param backward_flow: flow from the next frame and the current
-    @param use_structure: use structure to compute the minimum
+    img: numpy array
+        image frame
+
+    forward_flow: numpy array
+        flow from the current frame to the other
+
+    backward_flow: numpy array
+        flow from the next frame and the current
+
+    use_structure: bool, optional
+        use structure to compute the minimum
 
     Returns
     -------
-    @return: the minimum of the different reliabilities
+    the minimum of the different reliabilities
     """
 
     #soft threshold

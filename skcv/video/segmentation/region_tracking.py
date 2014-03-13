@@ -1,9 +1,6 @@
 import networkx as nx
 import numpy as np
 
-import matplotlib.pyplot as plt
-
-
 def bipartite_region_tracking(partition, optical_flow, reliability,
                     matching_th=0.1, reliability_th=0.2):
     """
@@ -27,18 +24,6 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
     Returns
     -------
     A NetworkX graph object with adjacency relations
-
-    Raises
-    ------
-    ValueError:
-        if partition has dimension 1
-
-    Notes
-    -----
-    The regions correspond to labels, not connected components
-
-    Examples
-    --------
 
     """
 

@@ -1,9 +1,6 @@
 import heapq
 import numpy as np
 
-import matplotlib.pyplot as plt
-from skcv.util import false_color, partition_mean_color
-
 from skcv.graph.rag import rag
 
 

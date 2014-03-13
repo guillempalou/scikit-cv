@@ -31,13 +31,13 @@ import os
 import sys
 import re
 import glob
-import setuptools # setuptools need to be imported before distutils
+import setuptools  # setuptools need to be imported before distutils
 from distutils.core import setup, Extension
+from Cython.Distutils import build_ext
 
 # get the numpoy include directories
 from numpy.distutils.misc_util import get_numpy_include_dirs
 
-from _build import cython
 
 def configure_extensions():
 
@@ -57,12 +57,10 @@ def configure_extensions():
         pyx_files = [path.split('/')[-1] for path in pyx_paths]
 
         for pyx_file in pyx_files:
-            cython([pyx_file], working_path=working_path)
             name = pyx_file[:-4]
-            full_path = os.path.join(working_path, name + '.cpp')
+            full_path = os.path.join(working_path, pyx_file)
 
-            e = Extension(name=package + "." + name,
-                          sources=[full_path],
+            e = Extension(package + "." + name, [full_path],
                           include_dirs=get_numpy_include_dirs())
 
             exts.append(e)
@@ -161,6 +159,7 @@ if __name__ == "__main__":
 
         ext_modules=extensions,
         include_package_data=True,
+        cmdclass={'build_ext': build_ext},
 
         zip_safe=False,  # the package can run out of an .egg file
     )

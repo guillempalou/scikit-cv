@@ -1,12 +1,15 @@
+from .camera import (look_at_matrix,
+                     calibration_matrix,
+                     camera_center,
+                     camera_parameters,
+                     internal_parameters)
 
-from .synthetic_point_cloud import random_sphere
-from .synthetic_point_cloud import random_ball
-from .synthetic_point_cloud import random_cube
+from .plots import plot_point_cloud
 
-from .points_functions import euclidean_to_homogeneous
-from .points_functions import homogeneous_to_euclidean
-from .points_functions import normalize_points
+from .points_functions import (euclidean_to_homogeneous,
+                               homogeneous_to_euclidean,
+                               normalize_points)
 
-from .camera import project
-from .camera import look_at_matrix
-
+from .synthetic_point_cloud import (random_cube,
+                                    random_sphere,
+                                    random_ball)

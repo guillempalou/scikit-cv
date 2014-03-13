@@ -21,6 +21,7 @@ def euclidean_to_homogeneous(x):
 
     return xe
 
+
 def homogeneous_to_euclidean(xh):
     """
     Transforms X to be in euclidean coordinates
@@ -58,6 +59,7 @@ def hnormalize(x):
         x = x[:, np.newaxis]
 
     return np.squeeze(x / x[-1, :])
+
 
 def normalize_points(x, is_homogeneous=False):
     """

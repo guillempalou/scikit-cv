@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import inv, svd
 from skcv.multiview.two_views.fundamental_matrix import *
-#from skcv.multiview.two_views._triangulate_kanatani_cython import _triangulate_kanatani_cython
+from ._triangulate_kanatani_cython import _triangulate_kanatani
 
 def _triangulate_hartley(x1, x2, f_matrix, P1, P2):
     """
@@ -110,74 +110,6 @@ def _triangulate_hartley(x1, x2, f_matrix, P1, P2):
     # return points
     return x_3d / x_3d[3, :]
 
-
-# def _triangulate_kanatani(x1, x2, f_matrix, P1, P2,
-#                           convergence=1e-6, max_iterations=10):
-#     """
-#     Triangulates according to
-#     Triangulation from Two Views Revisited: Hartley-Sturm vs. Optimal Correction
-#     Kenichi Kanatani
-#
-#     """
-#
-#
-#     n_points = x1.shape[1]
-#
-#     #3D points
-#     x_3d = np.zeros((4, n_points))
-#
-#     # sub matrix f_matrix
-#
-#     sub_f = f_matrix[:2, :2]
-#
-#     for i in range(n_points):
-#         # initial energy
-#         e0 = 1e10
-#
-#         # variables
-#         dx1 = np.zeros(2)
-#         dx2 = np.zeros(2)
-#
-#         # corrected coordinates
-#         x1a = x1[:, i]
-#         x2a = x2[:, i]
-#         e = 0
-#
-#         xFx = np.dot(x2[:, i], np.dot(f_matrix, x1[:, i]))
-#
-#         iterations = 0
-#
-#         while np.abs(e - e0) > convergence and \
-#                         iterations < max_iterations:
-#
-#             # variables
-#             nk1 = np.dot(f_matrix.T, x2a)[:2]
-#             nk2 = np.dot(f_matrix, x1a)[:2]
-#             n = np.dot(nk1, nk1) + np.dot(nk2, nk2)
-#
-#             l = (xFx - np.dot(dx2, np.dot(sub_f, dx1))) / n
-#
-#             dx1 = l*nk1
-#             dx2 = l*nk2
-#
-#             x1a = x1[:, i] - np.hstack((dx1[:2], 0))
-#             x2a = x2[:, i] - np.hstack((dx2[:2], 0))
-#
-#             # check for convergence
-#             e = np.dot(dx1, dx1) + np.dot(dx2, dx2)
-#             if np.abs(e - e0) / e0 < convergence:
-#                 break
-#
-#             e0 = e
-#
-#             iterations += 1
-#
-#         # triangulate
-#         x_3d[:, i] = triangulate(x1a, x2a, P1, P2)
-#
-#     return x_3d / x_3d[3, :]
-#
-#
 def triangulate(x1, x2, P1, P2):
     """
     Triangulates the 3D position from two projections and two cameras
@@ -206,7 +138,7 @@ def triangulate(x1, x2, P1, P2):
     u, d, v = svd(a)
 
     # the point lies on the null space of matrix a
-    return v[3,:]
+    return v[3, :]
 
 
 def optimal_triangulation(x1, x2, f_matrix, cameras=None, method='Hartley'):
@@ -246,6 +178,3 @@ def optimal_triangulation(x1, x2, f_matrix, cameras=None, method='Hartley'):
         x_3d = _triangulate_kanatani(x1, x2, f_matrix, p1, p2)
 
     return x_3d
-
-def find_projection_matrix_from_points(x, x_3d):
-    pass

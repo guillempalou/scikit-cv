@@ -22,7 +22,8 @@ def project(points, cameras):
     projections = []
 
     for camera in cameras:
-        projections.append(np.dot(camera, points))
+        p = np.dot(camera, points)
+        projections.append(p / p[2, :])
 
     return projections
 

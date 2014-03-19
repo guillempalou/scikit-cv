@@ -10,5 +10,4 @@ from .fundamental_matrix import (eight_point_algorithm,
                                  sampson_error)
 
 from .triangulation import (optimal_triangulation,
-                            triangulate,
-                            find_projection_matrix_from_points)
+                            triangulate)

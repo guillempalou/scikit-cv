@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.linalg import norm, svd, qr
+from numpy.linalg import norm, svd, qr, det
 
 
 def project(points, cameras):
@@ -133,6 +133,9 @@ def camera_parameters(camera):
 
     k = np.dot(k, t)
     r = np.dot(t, r)  #T is its own inverse
+
+    if det(r) < 0:
+        r *= -1
 
     return k, r, center
 

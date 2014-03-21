@@ -35,7 +35,7 @@ def linear_autocalibration(cameras, internal_parameters, n_iterations=50):
 
     ratio = k_pars[1, 1] / k_pars[0, 0]
 
-    norm_cameras = [np.dot(ki,cam) for cam in cameras]
+    norm_cameras = [np.dot(ki, cam) for cam in cameras]
 
     betas = 0.1*np.exp(0.3*np.linspace(0, n_iterations))
 
@@ -82,10 +82,9 @@ def linear_autocalibration(cameras, internal_parameters, n_iterations=50):
                             (q[3], q[6], q[8], q[9])))
 
         u, d, vh = svd(quadric)
-        t = np.zeros((4, 4))
-        t[:, :3] = np.dot(u, np.diag(np.sqrt(d)))[:, :3]
-        t[3, 3] = 1
-        print(quadric)
+
+        d[3] = 1
+        t = np.dot(u, np.diag(np.sqrt(d)))
 
         # compute the cost and keep the minimum
         cost = 0
@@ -95,12 +94,8 @@ def linear_autocalibration(cameras, internal_parameters, n_iterations=50):
             k, r, center = camera_parameters(c)
             k /= k[2, 2]
 
-            print("Parameters:\n", k)
-
             cost += (k[0, 1]**2 + (k[1, 1] / k[0, 0] - ratio) +
                      k[0, 2]**2 + k[1, 2]**2) / k[0, 0]**2
-
-        print(cost)
 
         if cost < min_cost:
             best_t = t

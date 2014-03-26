@@ -28,6 +28,12 @@ def project(points, cameras):
     return projections
 
 
+def depth_of_points(camera, points):
+    """
+    Computes the depth of the points
+
+    """
+
 def calibration_matrix(focal, skew=0, center=(0, 0), focal_y=None):
     """ Builds a calibration matrix from parameters
 

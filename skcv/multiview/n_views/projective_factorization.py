@@ -50,26 +50,27 @@ def projective_factorization(x, max_iterations=1):
 
         u, d, vh = svd(fact_matrix)
 
+        print(d[3] / d[4])
         d = d[:4]/d[0]
 
         # from the svd decomposition we can find the projections and 3d points
-        p_matrices = np.fliplr(u[:, :4])
-        x_3d = np.flipud(np.dot(np.diag(d), vh[:4, :]))
+        p_matrices = u[:, :4]
+        x_3d = np.dot(np.diag(d), vh[:4, :])
 
         iterations += 1
         if iterations != max_iterations:
-            l = np.ones((n_views, n_points))
+
+            w_matrix = np.dot(p_matrices, x_3d)
+
             for i in range(n_views):
-                c_matrix = p_matrices[3*i:3*(i+1), :]
-                projections = np.dot(c_matrix, x_3d)
-                l[i, :] = projections[2, :]
+                l[i, :] = w_matrix[3*i+2, :]
 
     cameras = []
 
     for i in range(n_views):
-        # denormalize camera matrices and make the first be
-        # the identify
+        # denormalize camera matrices
         c_matrix = np.dot(inv(norm_matrices[i]), p_matrices[3*i:3*(i+1), :])
-        cameras.append(c_matrix)
+
+        cameras.append(c_matrix))
 
     return cameras, x_3d

@@ -29,7 +29,7 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
 
     dimensions = len(partition.shape)
 
-    if dimensions != 3: #prama: no cover
+    if dimensions != 3:  # pragma: no cover
         raise ValueError("Dimensions must be 3")
 
     # link regions across frames
@@ -60,7 +60,7 @@ def bipartite_region_tracking(partition, optical_flow, reliability,
             # find the mean reliability
             rel = np.mean(reliability[frame, px, py])
 
-            if rel < reliability_th:
+            if rel < reliability_th: # pragma: no cover
                 continue
 
             # find where the regions projects to the next frame

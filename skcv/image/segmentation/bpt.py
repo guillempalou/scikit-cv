@@ -71,7 +71,7 @@ class BPT:
         n_regions = len(regions)
         max_label += 1
 
-        if verbose > 0:
+        if verbose > 0: # pragma: no cover
             print("Performing {0} merges".format(n_regions-1, max_label))
 
         for n in range(n_regions-1):
@@ -81,7 +81,7 @@ class BPT:
             while (to_merge[1] in merged) or (to_merge[2] in merged):
                 to_merge = heapq.heappop(dists)
 
-            if verbose > 1:
+            if verbose > 1: # pragma: no cover
                 print("Merging {0} and {1} to {2} with distance ".format(
                     to_merge[1],
                     to_merge[2],

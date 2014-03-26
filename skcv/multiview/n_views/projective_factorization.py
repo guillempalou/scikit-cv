@@ -71,6 +71,6 @@ def projective_factorization(x, max_iterations=1):
         # denormalize camera matrices
         c_matrix = np.dot(inv(norm_matrices[i]), p_matrices[3*i:3*(i+1), :])
 
-        cameras.append(c_matrix))
+        cameras.append(c_matrix)
 
     return cameras, x_3d

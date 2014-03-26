@@ -21,6 +21,8 @@ def project(points, cameras):
     #list of projections
     projections = []
 
+    if np.ndim(points) == 1:
+        points = points[:, np.newaxis]
     for camera in cameras:
         p = np.dot(camera, points)
         projections.append(p / p[2, :])

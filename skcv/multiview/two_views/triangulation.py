@@ -91,7 +91,7 @@ def _triangulate_hartley(x1, x2, f_matrix, P1, P2):
         if min_v < 1e10:
             l = np.array((min_v * f1, 1, -min_v))
             lp = np.array((0, min_v, 1))
-        else:
+        else:  # pragma: no cover
             l = np.array((f1, 0, -1))
             lp = np.array((0, 1, 0))
 
@@ -167,7 +167,7 @@ def optimal_triangulation(x1, x2, f_matrix, cameras=None, method='Hartley'):
     """
     #xn, t = normalize_points(x, is_homogeneous=True)
 
-    if cameras is None:
+    if cameras is None:  # pragma: no cover
         p1, p2 = canonical_cameras_from_f(f_matrix)
     else:
         p1, p2 = cameras

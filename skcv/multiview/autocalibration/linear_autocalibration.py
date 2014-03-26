@@ -10,6 +10,8 @@ def linear_autocalibration(cameras, internal_parameters, n_iterations=50):
     Pm = P*H
     Xm = H^-1*X
 
+    Warning: it only works for general motions
+
     Parameters
     ----------
     cameras: list
@@ -42,7 +44,7 @@ def linear_autocalibration(cameras, internal_parameters, n_iterations=50):
     min_cost = 1e200
     best_t = np.array(())
 
-    # transform a 16 vector of a symmatric matrix to a 10-vector
+    # transform a 16 vector of a symmetric matrix to a 10-vector
     # it could be precomputed
     idx = np.array((0, 1, 2, 3, 1, 4, 5, 6, 2, 5, 7, 8, 3, 6, 8, 9))
     h = np.zeros((16, 10))

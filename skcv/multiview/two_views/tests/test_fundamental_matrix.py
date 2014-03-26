@@ -122,6 +122,6 @@ def test_robust_f_estimation():
 
     f_matrix /= np.max(f_matrix)
 
-    assert_allclose(f_matrix, f_groundtruth, atol=0.1)
+    assert_allclose(np.abs(f_matrix), np.abs(f_groundtruth), atol=0.1)
 
 
